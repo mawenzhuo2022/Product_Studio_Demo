@@ -523,6 +523,30 @@
           height: 680px;
         }
       }
+
+      /* 在真手机上访问时，去掉外层“手机壳”，改为全屏显示内容 */
+      @media (max-width: 600px) {
+        body {
+          align-items: stretch;
+          justify-content: flex-start;
+        }
+
+        .phone-frame {
+          width: 100%;
+          height: auto;
+          min-height: 100vh;
+          border-radius: 0;
+          padding: 0;
+          background: none;
+          box-shadow: none;
+        }
+
+        .phone-inner {
+          border-radius: 0;
+          padding: 16px 12px 20px;
+          box-shadow: none;
+        }
+      }
     </style>
   </head>
   <body>
