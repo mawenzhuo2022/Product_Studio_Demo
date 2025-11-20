@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Focus Leaderboard</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Helvetica Neue", Arial, sans-serif;
+        color: #f5f5f7;
+        background:
+          radial-gradient(circle at 0% 0%, #1b2440 0, transparent 50%),
+          radial-gradient(circle at 100% 0%, #532b7f 0, transparent 55%),
+          radial-gradient(circle at 0% 100%, #165c5f 0, transparent 55%),
+          radial-gradient(circle at 100% 100%, #8f3f6a 0, transparent 55%),
+          #020617;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        opacity: 0.18;
+        mix-blend-mode: soft-light;
+      }
+
+      .phone-frame {
+        position: relative;
+        width: min(430px, 100% - 32px);
+        height: 860px;
+        border-radius: 36px;
+        padding: 18px;
+        background: radial-gradient(circle at 10% 0, #ffffff1f, transparent 60%),
+          radial-gradient(circle at 90% 100%, #ffffff1f, transparent 55%),
+          #020617;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.04),
+          0 18px 60px rgba(0, 0, 0, 0.85);
+        overflow: hidden;
+      }
+
+      .phone-inner {
+        position: relative;
+        height: 100%;
+        border-radius: 28px;
+        padding: 18px 16px 20px;
+        background: linear-gradient(
+          155deg,
+          rgba(15, 23, 42, 0.96),
+          rgba(15, 23, 42, 0.85)
+        );
+        box-shadow:
+          0 0 0 1px rgba(148, 163, 184, 0.18),
+          0 24px 80px rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(32px);
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .top-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .app-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.9),
+          rgba(51, 65, 85, 0.9)
+        );
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.8);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #e5e7eb;
+      }
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: radial-gradient(circle, #4ade80, #22c55e);
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.22);
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        color: #9ca3af;
+      }
+
+      .chip {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: linear-gradient(
+          135deg,
+          rgba(251, 191, 36, 0.2),
+          rgba(248, 250, 252, 0.05)
+        );
+        border: 1px solid rgba(250, 204, 21, 0.55);
+        color: #facc15;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .chip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #facc15;
+      }
+
+      .pill-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.95),
+          0 18px 45px rgba(0, 0, 0, 0.7);
+      }
+
+      .pill-button {
+        flex: 1;
+        border-radius: 999px;
+        padding: 8px 0;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+        transition:
+          color 0.16s ease-out,
+          background 0.16s ease-out,
+          box-shadow 0.16s ease-out,
+          transform 0.1s ease-out;
+      }
+
+      .pill-button span.icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+      }
+
+      .pill-button.is-active {
+        background: radial-gradient(circle at 0 0, #22c55e33, transparent 55%),
+          radial-gradient(circle at 100% 100%, #22d3ee2c, transparent 55%),
+          linear-gradient(135deg, #f97316, #facc15);
+        color: #111827;
+        box-shadow:
+          0 12px 30px rgba(248, 250, 252, 0.18),
+          0 0 0 1px rgba(15, 23, 42, 0.8);
+        transform: translateY(-1px);
+      }
+
+      .pill-button.is-active span.icon {
+        border-color: rgba(15, 23, 42, 0.6);
+        background: rgba(15, 23, 42, 0.1);
+      }
+
+      .glass-panel {
+        position: relative;
+        flex: 1;
+        border-radius: 26px;
+        padding: 14px 10px 12px;
+        background: radial-gradient(circle at 0 0, #ffffff15, transparent 55%),
+          radial-gradient(circle at 100% 100%, #0ea5e914, transparent 60%),
+          linear-gradient(
+            160deg,
+            rgba(15, 23, 42, 0.98),
+            rgba(15, 23, 42, 0.92)
+          );
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        box-shadow:
+          0 18px 50px rgba(15, 23, 42, 0.9),
+          0 0 0 1px rgba(15, 23, 42, 1);
+        backdrop-filter: blur(30px);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow: hidden;
+      }
+
+      .podium-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 0 4px;
+      }
+
+      .podium-title {
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #e5e7eb;
+      }
+
+      .podium-title span:last-child {
+        font-size: 11px;
+        color: #9ca3af;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .podium-title span:last-child::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #22c55e, #facc15);
+      }
+
+      .podium {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 14px;
+        padding: 14px 4px 10px;
+      }
+
+      .podium-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .podium-pill {
+        width: 100%;
+        border-radius: 20px;
+        padding: 16px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: radial-gradient(circle at 0 0, #22c55e2b, transparent 60%),
+          radial-gradient(circle at 100% 0, #f9731633, transparent 65%),
+          linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+        text-align: center;
+      }
+
+      .podium-pill.primary {
+        background: radial-gradient(circle at 15% 0, #22c55e4a, transparent 60%),
+          radial-gradient(circle at 100% 0, #facc1544, transparent 65%),
+          linear-gradient(145deg, #18181b, #0f172a);
+        border-color: rgba(250, 250, 250, 0.56);
+        box-shadow:
+          0 16px 40px rgba(15, 23, 42, 0.96),
+          0 0 0 1px rgba(15, 23, 42, 0.8);
+        transform: translateY(-4px);
+      }
+
+      .rank-badge {
+        position: static;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.9);
+        color: #e5e7eb;
+        margin-bottom: 4px;
+      }
+
+      .rank-badge span.dot-rank {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #22c55e, #a3e635);
+      }
+
+      .rank-badge.gold {
+        background: linear-gradient(135deg, #fbbf24, #f97316);
+        color: #111827;
+        border-color: rgba(15, 23, 42, 0.7);
+      }
+
+      .podium-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e5e7eb;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
+      }
+
+      .podium-time {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      .podium-bar {
+        width: 100%;
+        border-radius: 999px;
+        overflow: hidden;
+        height: 6px;
+        background: rgba(31, 41, 55, 0.9);
+      }
+
+      .podium-bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #22c55e, #facc15);
+      }
+
+      .list {
+        margin-top: 2px;
+        padding: 8px 2px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: auto;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border-radius: 999px;
+        padding: 8px 14px;
+        background: radial-gradient(circle at 0 0, #22c55e12, transparent 65%),
+          linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+        border: 1px solid rgba(31, 41, 55, 0.95);
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.9);
+      }
+
+      .row:nth-child(even) {
+        background: radial-gradient(circle at 100% 0, #0ea5e912, transparent 65%),
+          linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+      }
+
+      .row-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .row-rank {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        background: radial-gradient(circle at 30% 0, #22c55e66, transparent 65%),
+          rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(148, 163, 184, 0.9);
+        color: #e5e7eb;
+      }
+
+      .row-rank.highlight {
+        background: radial-gradient(circle at 20% 0, #facc1560, transparent 70%),
+          #0f172a;
+        border-color: rgba(250, 250, 250, 0.9);
+        color: #fef9c3;
+      }
+
+      .row-user {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .row-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #e5e7eb;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 170px;
+      }
+
+      .row-meta {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      .row-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+      }
+
+      .row-time {
+        color: #e5e7eb;
+        font-weight: 500;
+      }
+
+      .trend {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid;
+      }
+
+      .trend.up {
+        border-color: rgba(22, 163, 74, 0.8);
+        color: #bbf7d0;
+        background: rgba(22, 163, 74, 0.15);
+      }
+
+      .trend.down {
+        border-color: rgba(239, 68, 68, 0.85);
+        color: #fecaca;
+        background: rgba(239, 68, 68, 0.16);
+      }
+
+      .trend-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+      }
+
+      .trend.up .trend-dot {
+        background: linear-gradient(135deg, #22c55e, #4ade80);
+      }
+
+      .trend.down .trend-dot {
+        background: linear-gradient(135deg, #f97316, #ef4444);
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #6b7280;
+        padding: 0 6px;
+      }
+
+      .footer span:last-child {
+        color: #9ca3af;
+      }
+
+      .footer strong {
+        color: #e5e7eb;
+      }
+
+      @media (max-height: 820px) {
+        .phone-frame {
+          height: 760px;
+        }
+      }
+
+      @media (max-height: 720px) {
+        .phone-frame {
+          height: 680px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-frame">
+      <div class="phone-inner">
+        <header class="top-bar">
+          <div class="top-meta">
+            <div class="app-label">
+              <span class="dot"></span>
+              Focus · Leaderboard
+            </div>
+            <div class="title">Friends ranking</div>
+            <div class="subtitle">Compare today's screen time with friends</div>
+          </div>
+        </header>
+
+        <nav class="pill-nav" aria-label="Leaderboard mode">
+          <button class="pill-button" type="button">
+            <span class="icon">👤</span>
+            Personal
+          </button>
+          <button class="pill-button" type="button">
+            <span class="icon">👥</span>
+            Squad
+          </button>
+          <button class="pill-button is-active" type="button">
+            <span class="icon">🤝</span>
+            Friends
+          </button>
+        </nav>
+
+        <section class="glass-panel" aria-label="Friends leaderboard">
+          <header class="podium-header">
+            <div class="podium-title">
+              <span>Top 3 · Screen time today</span>
+              <span>Updated every 5 minutes</span>
+            </div>
+          </header>
+
+          <div class="podium" id="podium"></div>
+
+          <div class="list" id="leaderboard-list" aria-label="Full ranking list"></div>
+        </section>
+
+        <footer class="footer">
+          <span>Sample data · UI only</span>
+          <span>Unit: <strong>hours · minutes</strong></span>
+        </footer>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const fallbackDay0 = [
+          { name: "Brooklyn Simmons", durationMinutes: 50 },
+          { name: "Bradley Henry", durationMinutes: 40 },
+          { name: "Guy Hawkins", durationMinutes: 55 },
+          { name: "Albert Flores", durationMinutes: 75 },
+          { name: "Sarai Shihara", durationMinutes: 65 },
+          { name: "Zihan Luo", durationMinutes: 90 },
+          { name: "Jacob Thompson", durationMinutes: 80 },
+          { name: "Natasha Roman", durationMinutes: 120 },
+          { name: "Courtney Bell", durationMinutes: 100 },
+          { name: "Jordan Lee", durationMinutes: 110 }
+        ];
+
+        const fallbackDay1 = [
+          { name: "Brooklyn Simmons", durationMinutes: 47 },
+          { name: "Bradley Henry", durationMinutes: 57 },
+          { name: "Guy Hawkins", durationMinutes: 61 },
+          { name: "Albert Flores", durationMinutes: 70 },
+          { name: "Sarai Shihara", durationMinutes: 78 },
+          { name: "Zihan Luo", durationMinutes: 85 },
+          { name: "Jacob Thompson", durationMinutes: 92 },
+          { name: "Natasha Roman", durationMinutes: 99 },
+          { name: "Courtney Bell", durationMinutes: 106 },
+          { name: "Jordan Lee", durationMinutes: 113 }
+        ];
+
+        function parseDayCsv(text) {
+          const lines = text.trim().split(/\r?\n/);
+          if (lines.length <= 1) return [];
+          const headers = lines[0].split(",").map((h) => h.trim());
+          const nameIndex = headers.findIndex(
+            (h) => h.toLowerCase() === "name"
+          );
+          const minutesIndex = headers.findIndex((h) => {
+            const lower = h.toLowerCase();
+            return (
+              lower === "minutes" ||
+              lower === "minute" ||
+              lower === "durationminutes"
+            );
+          });
+          if (nameIndex === -1 || minutesIndex === -1) return [];
+
+          const rows = [];
+
+          for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            const cols = line.split(",").map((c) => c.trim());
+            const name = cols[nameIndex];
+            const minutesRaw = cols[minutesIndex];
+            if (!name) continue;
+            const minutes = Number(minutesRaw);
+            if (!Number.isNaN(minutes)) {
+              rows.push({
+                name,
+                durationMinutes: minutes
+              });
+            }
+          }
+
+          return rows;
+        }
+
+        function formatDuration(minutes) {
+          if (minutes < 60) return minutes + "m";
+          const h = Math.floor(minutes / 60);
+          const m = minutes % 60;
+          return h + "h " + (m ? m + "m" : "");
+        }
+
+        function buildLeaderboard(day0, day1) {
+          if (!Array.isArray(day1) || !day1.length) return;
+
+          const sorted = [...day1].sort(
+            (a, b) => a.durationMinutes - b.durationMinutes
+          );
+
+          const previous = Array.isArray(day0) && day0.length ? day0 : day1;
+          const sortedPrev = [...previous].sort(
+            (a, b) => a.durationMinutes - b.durationMinutes
+          );
+          const prevRankMap = new Map();
+          sortedPrev.forEach((item, index) => {
+            prevRankMap.set(item.name, index + 1);
+          });
+
+          const podiumEl = document.getElementById("podium");
+          const listEl = document.getElementById("leaderboard-list");
+          if (!podiumEl || !listEl) return;
+
+          podiumEl.innerHTML = "";
+          listEl.innerHTML = "";
+
+          const top3 = sorted.slice(0, 3);
+          const rest = sorted.slice(3);
+
+          const durationsTop = top3.map((d) => d.durationMinutes);
+          const maxD = Math.max.apply(null, durationsTop);
+          const minD = Math.min.apply(null, durationsTop);
+
+          function barWidth(minutes) {
+            if (maxD === minD) return "100%";
+            const score = (maxD - minutes) / (maxD - minD);
+            const adjusted = 0.3 + score * 0.7;
+            return Math.round(adjusted * 100) + "%";
+          }
+
+          const podiumOrder = [1, 0, 2];
+
+          podiumOrder.forEach((idx) => {
+            const entry = top3[idx];
+            if (!entry) return;
+            const rank = sorted.indexOf(entry) + 1;
+
+            const item = document.createElement("div");
+            item.className = "podium-item";
+
+            const pill = document.createElement("div");
+            pill.className =
+              "podium-pill" + (rank === 1 ? " primary" : "");
+
+            const badge = document.createElement("div");
+            badge.className =
+              "rank-badge" + (rank === 1 ? " gold" : "");
+            const badgeDot = document.createElement("span");
+            badgeDot.className = "dot-rank";
+            const badgeText = document.createTextNode("#" + rank);
+            badge.appendChild(badgeDot);
+            badge.appendChild(badgeText);
+
+            const nameEl = document.createElement("div");
+            nameEl.className = "podium-name";
+            nameEl.textContent = entry.name;
+
+            const timeEl = document.createElement("div");
+            timeEl.className = "podium-time";
+            timeEl.textContent =
+              formatDuration(entry.durationMinutes) + " on phone today";
+
+            const bar = document.createElement("div");
+            bar.className = "podium-bar";
+            const barFill = document.createElement("div");
+            barFill.className = "podium-bar-fill";
+            barFill.style.width = barWidth(entry.durationMinutes);
+            bar.appendChild(barFill);
+
+            pill.appendChild(badge);
+            pill.appendChild(nameEl);
+            pill.appendChild(timeEl);
+            pill.appendChild(bar);
+
+            item.appendChild(pill);
+            podiumEl.appendChild(item);
+          });
+
+          rest.forEach((entry, idx) => {
+            const rank = sorted.indexOf(entry) + 1;
+            const prevRank = prevRankMap.has(entry.name)
+              ? prevRankMap.get(entry.name)
+              : rank;
+            const diff = prevRank - rank;
+
+            const row = document.createElement("div");
+            row.className = "row";
+
+            const left = document.createElement("div");
+            left.className = "row-left";
+
+            const rankEl = document.createElement("div");
+            rankEl.className =
+              "row-rank" + (rank === 4 ? " highlight" : "");
+            rankEl.textContent = rank;
+
+            const user = document.createElement("div");
+            user.className = "row-user";
+
+            const nameEl = document.createElement("div");
+            nameEl.className = "row-name";
+            nameEl.textContent = entry.name;
+
+            const metaEl = document.createElement("div");
+            metaEl.className = "row-meta";
+            metaEl.textContent = "Today's screen time";
+
+            user.appendChild(nameEl);
+            user.appendChild(metaEl);
+
+            left.appendChild(rankEl);
+            left.appendChild(user);
+
+            const right = document.createElement("div");
+            right.className = "row-right";
+
+            const timeEl = document.createElement("div");
+            timeEl.className = "row-time";
+            timeEl.textContent = formatDuration(entry.durationMinutes);
+
+            right.appendChild(timeEl);
+
+            if (diff !== 0) {
+              const isUp = diff > 0;
+              const trendEl = document.createElement("div");
+              trendEl.className = "trend " + (isUp ? "up" : "down");
+              trendEl.setAttribute(
+                "aria-label",
+                isUp ? "rank up" : "rank down"
+              );
+
+              const dot = document.createElement("span");
+              dot.className = "trend-dot";
+
+              const changeText = document.createTextNode(
+                (isUp ? "+" : "") + diff
+              );
+
+              trendEl.appendChild(dot);
+              trendEl.appendChild(changeText);
+
+              right.appendChild(trendEl);
+            }
+
+            row.appendChild(left);
+            row.appendChild(right);
+            listEl.appendChild(row);
+          });
+        }
+
+        async function loadLeaderboard() {
+          let day0 = [];
+          let day1 = [];
+
+          try {
+            const res0 = await fetch("day0.csv", { cache: "no-store" });
+            if (!res0.ok) throw new Error("day0 load error");
+            const text0 = await res0.text();
+            const parsed0 = parseDayCsv(text0);
+            day0 = parsed0 && parsed0.length ? parsed0 : fallbackDay0;
+          } catch (e) {
+            day0 = fallbackDay0;
+          }
+
+          try {
+            const res1 = await fetch("day1.csv", { cache: "no-store" });
+            if (!res1.ok) throw new Error("day1 load error");
+            const text1 = await res1.text();
+            const parsed1 = parseDayCsv(text1);
+            day1 = parsed1 && parsed1.length ? parsed1 : fallbackDay1;
+          } catch (e) {
+            day1 = fallbackDay1;
+          }
+
+          buildLeaderboard(day0, day1);
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", loadLeaderboard);
+        } else {
+          loadLeaderboard();
+        }
+      })();
+    </script>
+  </body>
+</html>
