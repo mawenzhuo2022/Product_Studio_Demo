@@ -593,7 +593,7 @@
 
         <footer class="footer">
           <span>Sample data · UI only</span>
-          <span>Unit: <strong>hours · minutes</strong></span>
+          <span>Unit: <strong>percentage vs yesterday</strong></span>
         </footer>
       </div>
     </div>
@@ -673,18 +673,37 @@
         function buildLeaderboard(day0, day1) {
           if (!Array.isArray(day1) || !day1.length) return;
 
-          const sorted = [...day1].sort(
-            (a, b) => a.durationMinutes - b.durationMinutes
-          );
-
+          // previous day data 作为“基准时间”
           const previous = Array.isArray(day0) && day0.length ? day0 : day1;
-          const sortedPrev = [...previous].sort(
-            (a, b) => a.durationMinutes - b.durationMinutes
-          );
-          const prevRankMap = new Map();
-          sortedPrev.forEach((item, index) => {
-            prevRankMap.set(item.name, index + 1);
+
+          const prevMinutesMap = new Map();
+          previous.forEach((item) => {
+            prevMinutesMap.set(item.name, item.durationMinutes);
           });
+
+          // 把“今天的时长 + 相对前一天的百分比变化”合并到一起
+          const entries = day1.map((today) => {
+            const prevMinutes = prevMinutesMap.has(today.name)
+              ? prevMinutesMap.get(today.name)
+              : today.durationMinutes;
+
+            const changeMinutes = today.durationMinutes - prevMinutes;
+            const percentChange =
+              prevMinutes > 0 ? (changeMinutes / prevMinutes) * 100 : 0;
+
+            return {
+              ...today,
+              prevMinutes,
+              changeMinutes,
+              percentChange
+            };
+          });
+
+          // 排序逻辑：按“百分比变化”从小到大排序
+          // 也就是“减少时间最多（百分比最负）”排在最前
+          const sorted = [...entries].sort(
+            (a, b) => a.percentChange - b.percentChange
+          );
 
           const podiumEl = document.getElementById("podium");
           const listEl = document.getElementById("leaderboard-list");
@@ -734,10 +753,24 @@
             nameEl.className = "podium-name";
             nameEl.textContent = entry.name;
 
-            const timeEl = document.createElement("div");
-            timeEl.className = "podium-time";
-            timeEl.textContent =
-              formatDuration(entry.durationMinutes) + " on phone today";
+            // Top3 下面显示一个高亮的百分比变化（不带 “vs yesterday” 文案）
+            const value = entry.percentChange;
+            const isDecrease = value < 0;
+
+            const changeEl = document.createElement("div");
+            changeEl.className = "trend " + (isDecrease ? "up" : "down");
+
+            const dot = document.createElement("span");
+            dot.className = "trend-dot";
+
+            const absRounded = Math.round(Math.abs(value) * 10) / 10;
+            const sign = value > 0 ? "+" : value < 0 ? "-" : "";
+            const label = (sign || "±") + absRounded + "%";
+
+            const textNode = document.createTextNode(label);
+
+            changeEl.appendChild(dot);
+            changeEl.appendChild(textNode);
 
             const bar = document.createElement("div");
             bar.className = "podium-bar";
@@ -748,7 +781,7 @@
 
             pill.appendChild(badge);
             pill.appendChild(nameEl);
-            pill.appendChild(timeEl);
+            pill.appendChild(changeEl);
             pill.appendChild(bar);
 
             item.appendChild(pill);
@@ -757,10 +790,6 @@
 
           rest.forEach((entry, idx) => {
             const rank = sorted.indexOf(entry) + 1;
-            const prevRank = prevRankMap.has(entry.name)
-              ? prevRankMap.get(entry.name)
-              : rank;
-            const diff = prevRank - rank;
 
             const row = document.createElement("div");
             row.className = "row";
@@ -793,33 +822,30 @@
             const right = document.createElement("div");
             right.className = "row-right";
 
-            const timeEl = document.createElement("div");
-            timeEl.className = "row-time";
-            timeEl.textContent = formatDuration(entry.durationMinutes);
+            // 用“相对前一天的百分比变化”来展示加减时间（只显示百分比，不显示具体时长）
+            const value = entry.percentChange;
+            const isDecrease = value < 0;
 
-            right.appendChild(timeEl);
+            const trendEl = document.createElement("div");
+            trendEl.className = "trend " + (isDecrease ? "up" : "down");
+            trendEl.setAttribute(
+              "aria-label",
+              isDecrease ? "screen time decreased" : "screen time increased"
+            );
 
-            if (diff !== 0) {
-              const isUp = diff > 0;
-              const trendEl = document.createElement("div");
-              trendEl.className = "trend " + (isUp ? "up" : "down");
-              trendEl.setAttribute(
-                "aria-label",
-                isUp ? "rank up" : "rank down"
-              );
+            const dot = document.createElement("span");
+            dot.className = "trend-dot";
 
-              const dot = document.createElement("span");
-              dot.className = "trend-dot";
+            const absRounded = Math.round(Math.abs(value) * 10) / 10;
+            const sign = value > 0 ? "+" : value < 0 ? "-" : "";
+            const text = document.createTextNode(
+              (sign || "±") + absRounded + "%"
+            );
 
-              const changeText = document.createTextNode(
-                (isUp ? "+" : "") + diff
-              );
+            trendEl.appendChild(dot);
+            trendEl.appendChild(text);
 
-              trendEl.appendChild(dot);
-              trendEl.appendChild(changeText);
-
-              right.appendChild(trendEl);
-            }
+            right.appendChild(trendEl);
 
             row.appendChild(left);
             row.appendChild(right);
