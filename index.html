@@ -339,6 +339,54 @@
         border-color: rgba(15, 23, 42, 0.7);
       }
 
+      .podium-avatar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: -20px; /* Pull pill up slightly or avatar down */
+        z-index: 2;
+      }
+      
+      .podium-rank-number {
+        font-size: 20px;
+        font-weight: 900;
+        color: #e5e7eb;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 4px;
+        font-style: italic;
+      }
+
+      .podium-item:nth-child(2) .podium-rank-number { /* Rank 1 (center) */
+        font-size: 28px;
+        color: #facc15;
+      }
+
+      .podium-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(148, 163, 184, 0.5);
+        background: #1e293b;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      }
+
+      .podium-item:nth-child(2) .podium-avatar {
+        width: 72px;
+        height: 72px;
+        border-color: #facc15;
+        box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.2), 0 12px 30px rgba(0,0,0,0.5);
+      }
+
+      .row-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: #1e293b;
+      }
+
       .podium-name {
         font-size: 13px;
         font-weight: 600;
@@ -673,6 +721,34 @@
         function buildLeaderboard(day0, day1) {
           if (!Array.isArray(day1) || !day1.length) return;
 
+          // Map names to avatar files
+          const avatarMap = {
+            "Andita": "Andita.png",
+            "Andrash": "Andrash.png",
+            "Anyssa": "Anyssa.jpg",
+            "Ayu": "Ayu.jpg",
+            "Febby": "Febby.jpg",
+            "Ghifary": "Ghifary.jpg",
+            "Glory": "Glory.png",
+            "Hannah": "Hannah.jpg",
+            "Maya": "Maya.jpg",
+            "Naomi": "Naomi.jpg",
+            "Nicho": "Nicho.jpg",
+            "Pradhira": "Pradhira.png",
+            "Shastya": "Shastya.jpg",
+            "William": "William.png"
+          };
+
+          function getAvatar(name) {
+            // Try exact match
+            if (avatarMap[name]) return "img/" + avatarMap[name];
+            // Try first word match
+            const first = name.split(' ')[0];
+            if (avatarMap[first]) return "img/" + avatarMap[first];
+            // Fallback
+            return "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
+          }
+
           // previous day data 作为“基准时间”
           const previous = Array.isArray(day0) && day0.length ? day0 : day1;
 
@@ -736,18 +812,26 @@
             const item = document.createElement("div");
             item.className = "podium-item";
 
+            // 1. Rank & Avatar Container (Above Pill)
+            const avatarContainer = document.createElement("div");
+            avatarContainer.className = "podium-avatar-container";
+
+            const rankNum = document.createElement("div");
+            rankNum.className = "podium-rank-number";
+            rankNum.textContent = rank;
+
+            const avatarImg = document.createElement("img");
+            avatarImg.className = "podium-avatar";
+            avatarImg.src = getAvatar(entry.name);
+            avatarImg.alt = entry.name;
+
+            avatarContainer.appendChild(rankNum);
+            avatarContainer.appendChild(avatarImg);
+
+            // 2. The Pill (Name, Stats)
             const pill = document.createElement("div");
             pill.className =
               "podium-pill" + (rank === 1 ? " primary" : "");
-
-            const badge = document.createElement("div");
-            badge.className =
-              "rank-badge" + (rank === 1 ? " gold" : "");
-            const badgeDot = document.createElement("span");
-            badgeDot.className = "dot-rank";
-            const badgeText = document.createTextNode("#" + rank);
-            badge.appendChild(badgeDot);
-            badge.appendChild(badgeText);
 
             const nameEl = document.createElement("div");
             nameEl.className = "podium-name";
@@ -779,11 +863,11 @@
             barFill.style.width = barWidth(entry.durationMinutes);
             bar.appendChild(barFill);
 
-            pill.appendChild(badge);
             pill.appendChild(nameEl);
             pill.appendChild(changeEl);
             pill.appendChild(bar);
 
+            item.appendChild(avatarContainer);
             item.appendChild(pill);
             podiumEl.appendChild(item);
           });
@@ -802,6 +886,11 @@
               "row-rank" + (rank === 4 ? " highlight" : "");
             rankEl.textContent = rank;
 
+            const avatarImg = document.createElement("img");
+            avatarImg.className = "row-avatar";
+            avatarImg.src = getAvatar(entry.name);
+            avatarImg.alt = entry.name;
+
             const user = document.createElement("div");
             user.className = "row-user";
 
@@ -817,6 +906,7 @@
             user.appendChild(metaEl);
 
             left.appendChild(rankEl);
+            left.appendChild(avatarImg);
             left.appendChild(user);
 
             const right = document.createElement("div");
