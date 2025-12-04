@@ -123,29 +123,6 @@
         color: #9ca3af;
       }
 
-      .chip {
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        background: linear-gradient(
-          135deg,
-          rgba(251, 191, 36, 0.2),
-          rgba(248, 250, 252, 0.05)
-        );
-        border: 1px solid rgba(250, 204, 21, 0.55);
-        color: #facc15;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .chip-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: #facc15;
-      }
-
       .pill-nav {
         display: flex;
         align-items: center;
@@ -175,11 +152,7 @@
         justify-content: center;
         gap: 6px;
         cursor: pointer;
-        transition:
-          color 0.16s ease-out,
-          background 0.16s ease-out,
-          box-shadow 0.16s ease-out,
-          transform 0.1s ease-out;
+        transition: all 0.16s ease-out;
       }
 
       .pill-button span.icon {
@@ -232,6 +205,25 @@
         overflow: hidden;
       }
 
+      /* --- View Switching --- */
+      .view-section {
+        display: none;
+        flex: 1;
+        flex-direction: column;
+        gap: 14px;
+        animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .view-section.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* --- Friends / Shared Styles --- */
       .podium-header {
         display: flex;
         flex-direction: column;
@@ -254,14 +246,6 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-      }
-
-      .podium-title span:last-child::before {
-        content: "";
-        width: 4px;
-        height: 4px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #22c55e, #facc15);
       }
 
       .podium {
@@ -310,40 +294,11 @@
         transform: translateY(-4px);
       }
 
-      .rank-badge {
-        position: static;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        background: rgba(15, 23, 42, 0.92);
-        border: 1px solid rgba(148, 163, 184, 0.9);
-        color: #e5e7eb;
-        margin-bottom: 4px;
-      }
-
-      .rank-badge span.dot-rank {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #22c55e, #a3e635);
-      }
-
-      .rank-badge.gold {
-        background: linear-gradient(135deg, #fbbf24, #f97316);
-        color: #111827;
-        border-color: rgba(15, 23, 42, 0.7);
-      }
-
       .podium-avatar-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: -20px; /* Pull pill up slightly or avatar down */
+        margin-bottom: -20px;
         z-index: 2;
       }
       
@@ -356,7 +311,7 @@
         font-style: italic;
       }
 
-      .podium-item:nth-child(2) .podium-rank-number { /* Rank 1 (center) */
+      .podium-item:nth-child(2) .podium-rank-number {
         font-size: 28px;
         color: #facc15;
       }
@@ -378,15 +333,6 @@
         box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.2), 0 12px 30px rgba(0,0,0,0.5);
       }
 
-      .row-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: #1e293b;
-      }
-
       .podium-name {
         font-size: 13px;
         font-weight: 600;
@@ -395,11 +341,6 @@
         text-overflow: ellipsis;
         overflow: hidden;
         max-width: 100%;
-      }
-
-      .podium-time {
-        font-size: 11px;
-        color: #9ca3af;
       }
 
       .podium-bar {
@@ -501,9 +442,13 @@
         font-size: 13px;
       }
 
-      .row-time {
-        color: #e5e7eb;
-        font-weight: 500;
+      .row-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: #1e293b;
       }
 
       .trend {
@@ -543,6 +488,207 @@
         background: linear-gradient(135deg, #f97316, #ef4444);
       }
 
+      /* --- Personal View Styles --- */
+      .st-header {
+        text-align: center;
+        margin-top: 8px;
+        margin-bottom: 16px;
+      }
+      .st-title {
+        font-size: 13px;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+      }
+      .st-time {
+        font-size: 42px;
+        font-weight: 800;
+        color: #e5e7eb;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .st-trend {
+        font-size: 13px;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .st-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 180px;
+        padding: 20px 8px 0;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .st-chart::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed rgba(255,255,255,0.1);
+        z-index: 0;
+      }
+      .st-bar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        z-index: 1;
+      }
+      .st-bar-bg {
+        width: 8px;
+        height: 120px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 999px;
+        position: relative;
+        overflow: hidden;
+      }
+      .st-bar-fill {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: #3b82f6;
+        border-radius: 999px;
+        min-height: 6px;
+        transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .st-bar-label {
+        font-size: 11px;
+        color: #6b7280;
+        font-weight: 600;
+      }
+      /* Highlight "Today" or active bar */
+      .st-bar-col.active .st-bar-fill {
+        background: #facc15;
+        box-shadow: 0 0 16px rgba(250, 204, 21, 0.4);
+      }
+      .st-bar-col.active .st-bar-label {
+        color: #e5e7eb;
+      }
+
+      /* Fake app list */
+      .app-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .app-row:last-child { border-bottom: none; }
+      .app-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        background: #333;
+      }
+      .app-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+      .app-name { font-size: 13px; font-weight: 600; color: #e5e7eb; }
+      .app-cat { font-size: 11px; color: #9ca3af; }
+      .app-time { font-size: 13px; font-weight: 600; color: #e5e7eb; }
+
+      /* --- Partner View Styles --- */
+      .partner-container {
+        display: flex;
+        gap: 12px;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        position: relative;
+      }
+      .partner-card {
+        flex: 1;
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+        border-radius: 24px;
+        padding: 30px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        position: relative;
+        transition: transform 0.3s;
+        min-height: 260px;
+      }
+      .partner-card.winner {
+        border-color: rgba(250, 204, 21, 0.6);
+        background: radial-gradient(circle at 50% 0, rgba(250, 204, 21, 0.15), rgba(30, 41, 59, 0.7));
+        transform: scale(1.05) translateY(-6px);
+        z-index: 1;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(250, 204, 21, 0.3);
+      }
+      .partner-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.15);
+        margin-bottom: 16px;
+        object-fit: cover;
+        background: #0f172a;
+      }
+      .partner-card.winner .partner-avatar {
+        border-color: #facc15;
+        box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.25);
+      }
+      .partner-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #e5e7eb;
+        margin-bottom: 6px;
+        text-align: center;
+      }
+      .partner-time {
+        font-size: 28px;
+        font-weight: 800;
+        color: #e5e7eb;
+        margin-bottom: 12px;
+      }
+      .partner-status {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.1);
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .partner-card.winner .partner-status {
+        background: linear-gradient(135deg, #facc15, #f97316);
+        color: #0f172a;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+      }
+      .vs-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #0f172a;
+        border: 2px solid rgba(255,255,255,0.1);
+        color: #facc15;
+        font-size: 12px;
+        font-weight: 900;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      }
+
       .footer {
         display: flex;
         align-items: center;
@@ -572,7 +718,6 @@
         }
       }
 
-      /* 在真手机上访问时，去掉外层“手机壳”，改为全屏显示内容 */
       @media (max-width: 600px) {
         body {
           align-items: stretch;
@@ -606,37 +751,97 @@
               <span class="dot"></span>
               Focus · Leaderboard
             </div>
-            <div class="title">Brainrot-Fighter-Leaderboar</div>
-            <div class="subtitle">Check your gang's recovery progress</div>
+            <div class="title">Brainrot-Fighter</div>
+            <div class="subtitle">Recover your time, one minute at a time.</div>
           </div>
         </header>
 
         <nav class="pill-nav" aria-label="Leaderboard mode">
-          <button class="pill-button" type="button">
+          <button class="pill-button" type="button" data-tab="personal">
             <span class="icon">👤</span>
             Personal
           </button>
-          <button class="pill-button" type="button">
+          <button class="pill-button" type="button" data-tab="partner">
             <span class="icon">👥</span>
             Partner
           </button>
-          <button class="pill-button is-active" type="button">
+          <button class="pill-button is-active" type="button" data-tab="friends">
             <span class="icon">🤝</span>
             Friends
           </button>
         </nav>
 
-        <section class="glass-panel" aria-label="Friends leaderboard">
-          <header class="podium-header">
-            <div class="podium-title">
-              <span>Top 3 · Screen time today</span>
-              <span>Updated every night at 00:00</span>
+        <section class="glass-panel" aria-label="Content Area">
+          
+          <!-- PERSONAL VIEW -->
+          <div id="view-personal" class="view-section">
+            <div class="st-header">
+              <div class="st-title">Daily Average</div>
+              <div class="st-time" id="personal-total-time">--</div>
+              <div class="st-trend" id="personal-trend">...</div>
             </div>
-          </header>
+            <div class="st-chart" id="personal-chart">
+              <!-- Chart Bars injected by JS -->
+            </div>
+            <div class="list" style="margin-top: 0; flex: 1; overflow: auto;">
+               <div class="podium-title" style="margin-bottom: 8px">Most Used Apps</div>
+               <!-- Fake Apps -->
+               <div class="app-row">
+                 <div class="app-icon" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white;">📸</div>
+                 <div class="app-info">
+                   <div class="app-name">Instagram</div>
+                   <div class="app-cat">Social</div>
+                 </div>
+                 <div class="app-time">2h 14m</div>
+               </div>
+               <div class="app-row">
+                 <div class="app-icon" style="background: black; color: white;">🎵</div>
+                 <div class="app-info">
+                   <div class="app-name">TikTok</div>
+                   <div class="app-cat">Entertainment</div>
+                 </div>
+                 <div class="app-time">1h 45m</div>
+               </div>
+               <div class="app-row">
+                 <div class="app-icon" style="background: #ff0000; color: white;">▶️</div>
+                 <div class="app-info">
+                   <div class="app-name">YouTube</div>
+                   <div class="app-cat">Entertainment</div>
+                 </div>
+                 <div class="app-time">55m</div>
+               </div>
+            </div>
+          </div>
 
-          <div class="podium" id="podium"></div>
+          <!-- PARTNER VIEW -->
+          <div id="view-partner" class="view-section">
+            <header class="podium-header">
+               <div class="podium-title">
+                 <span>1v1 Battle</span>
+                 <span>Today</span>
+               </div>
+            </header>
+            <div class="partner-container" id="partner-content">
+               <!-- Injected by JS -->
+            </div>
+             <div style="text-align: center; margin-top: auto; font-size: 11px; color: #6b7280;">
+              Lower screen time wins the battle!
+            </div>
+          </div>
 
-          <div class="list" id="leaderboard-list" aria-label="Full ranking list"></div>
+          <!-- FRIENDS VIEW (Original) -->
+          <div id="view-friends" class="view-section active">
+            <header class="podium-header">
+              <div class="podium-title">
+                <span>Top 3 · Screen time today</span>
+                <span>Updated 00:00</span>
+              </div>
+            </header>
+
+            <div class="podium" id="podium"></div>
+            <div class="list" id="leaderboard-list" aria-label="Full ranking list"></div>
+          </div>
+
         </section>
 
         <footer class="footer">
@@ -647,6 +852,7 @@
     </div>
     <script>
       (function () {
+        // --- DATA LOADING & PARSING ---
         const fallbackDay0 = [
           { name: "Brooklyn Simmons", durationMinutes: 50 },
           { name: "Bradley Henry", durationMinutes: 40 },
@@ -673,25 +879,19 @@
           { name: "Jordan Lee", durationMinutes: 113 }
         ];
 
+        let globalEntries = []; // Store processed data for reuse
+
         function parseDayCsv(text) {
           const lines = text.trim().split(/\r?\n/);
           if (lines.length <= 1) return [];
           const headers = lines[0].split(",").map((h) => h.trim());
-          const nameIndex = headers.findIndex(
-            (h) => h.toLowerCase() === "name"
-          );
+          const nameIndex = headers.findIndex((h) => h.toLowerCase() === "name");
           const minutesIndex = headers.findIndex((h) => {
             const lower = h.toLowerCase();
-            return (
-              lower === "minutes" ||
-              lower === "minute" ||
-              lower === "durationminutes"
-            );
+            return (lower === "minutes" || lower === "minute" || lower === "durationminutes");
           });
           if (nameIndex === -1 || minutesIndex === -1) return [];
-
           const rows = [];
-
           for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
@@ -701,85 +901,52 @@
             if (!name) continue;
             const minutes = Number(minutesRaw);
             if (!Number.isNaN(minutes)) {
-              rows.push({
-                name,
-                durationMinutes: minutes
-              });
+              rows.push({ name, durationMinutes: minutes });
             }
           }
-
           return rows;
         }
 
         function formatDuration(minutes) {
-          if (minutes < 60) return minutes + "m";
           const h = Math.floor(minutes / 60);
           const m = minutes % 60;
-          return h + "h " + (m ? m + "m" : "");
+          return (h > 0 ? h + "h " : "") + m + "m";
         }
 
+        // --- AVATAR HELPERS ---
+        const avatarMap = {
+          "Andita": "Andita.png", "Andrash": "Andrash.png", "Anyssa": "Anyssa.jpg",
+          "Ayu": "Ayu.jpg", "Febby": "Febby.jpg", "Ghifary": "Ghifary.jpg",
+          "Glory": "Glory.png", "Hannah": "Hannah.jpg", "Maya": "Maya.jpg",
+          "Naomi": "Naomi.jpg", "Nicho": "Nicho.jpg", "Pradhira": "Pradhira.png",
+          "Shastya": "Shastya.jpg", "William": "William.png"
+        };
+
+        function getAvatar(name) {
+          if (avatarMap[name]) return "img/" + avatarMap[name];
+          const first = name.split(' ')[0];
+          if (avatarMap[first]) return "img/" + avatarMap[first];
+          return "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        // 1. FRIENDS (Leaderboard)
         function buildLeaderboard(day0, day1) {
-          if (!Array.isArray(day1) || !day1.length) return;
-
-          // Map names to avatar files
-          const avatarMap = {
-            "Andita": "Andita.png",
-            "Andrash": "Andrash.png",
-            "Anyssa": "Anyssa.jpg",
-            "Ayu": "Ayu.jpg",
-            "Febby": "Febby.jpg",
-            "Ghifary": "Ghifary.jpg",
-            "Glory": "Glory.png",
-            "Hannah": "Hannah.jpg",
-            "Maya": "Maya.jpg",
-            "Naomi": "Naomi.jpg",
-            "Nicho": "Nicho.jpg",
-            "Pradhira": "Pradhira.png",
-            "Shastya": "Shastya.jpg",
-            "William": "William.png"
-          };
-
-          function getAvatar(name) {
-            // Try exact match
-            if (avatarMap[name]) return "img/" + avatarMap[name];
-            // Try first word match
-            const first = name.split(' ')[0];
-            if (avatarMap[first]) return "img/" + avatarMap[first];
-            // Fallback
-            return "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
-          }
-
-          // previous day data 作为“基准时间”
-          const previous = Array.isArray(day0) && day0.length ? day0 : day1;
-
           const prevMinutesMap = new Map();
-          previous.forEach((item) => {
-            prevMinutesMap.set(item.name, item.durationMinutes);
-          });
+          const previous = Array.isArray(day0) && day0.length ? day0 : day1;
+          previous.forEach((item) => prevMinutesMap.set(item.name, item.durationMinutes));
 
-          // 把“今天的时长 + 相对前一天的百分比变化”合并到一起
           const entries = day1.map((today) => {
-            const prevMinutes = prevMinutesMap.has(today.name)
-              ? prevMinutesMap.get(today.name)
-              : today.durationMinutes;
-
+            const prevMinutes = prevMinutesMap.has(today.name) ? prevMinutesMap.get(today.name) : today.durationMinutes;
             const changeMinutes = today.durationMinutes - prevMinutes;
-            const percentChange =
-              prevMinutes > 0 ? (changeMinutes / prevMinutes) * 100 : 0;
-
-            return {
-              ...today,
-              prevMinutes,
-              changeMinutes,
-              percentChange
-            };
+            const percentChange = prevMinutes > 0 ? (changeMinutes / prevMinutes) * 100 : 0;
+            return { ...today, prevMinutes, changeMinutes, percentChange };
           });
 
-          // 排序逻辑：按“百分比变化”从小到大排序
-          // 也就是“减少时间最多（百分比最负）”排在最前
-          const sorted = [...entries].sort(
-            (a, b) => a.percentChange - b.percentChange
-          );
+          // Sort by improvement (most negative change first)
+          const sorted = [...entries].sort((a, b) => a.percentChange - b.percentChange);
+          globalEntries = sorted; // Save for other views
 
           const podiumEl = document.getElementById("podium");
           const listEl = document.getElementById("leaderboard-list");
@@ -791,19 +958,17 @@
           const top3 = sorted.slice(0, 3);
           const rest = sorted.slice(3);
 
+          // Podium Scaling
           const durationsTop = top3.map((d) => d.durationMinutes);
-          const maxD = Math.max.apply(null, durationsTop);
-          const minD = Math.min.apply(null, durationsTop);
-
+          const maxD = Math.max(...durationsTop);
+          const minD = Math.min(...durationsTop);
           function barWidth(minutes) {
-            if (maxD === minD) return "100%";
-            const score = (maxD - minutes) / (maxD - minD);
-            const adjusted = 0.3 + score * 0.7;
-            return Math.round(adjusted * 100) + "%";
+             if (maxD === minD) return "100%";
+             const score = (maxD - minutes) / (maxD - minD);
+             return Math.round((0.3 + score * 0.7) * 100) + "%";
           }
 
           const podiumOrder = [1, 0, 2];
-
           podiumOrder.forEach((idx) => {
             const entry = top3[idx];
             if (!entry) return;
@@ -811,161 +976,184 @@
 
             const item = document.createElement("div");
             item.className = "podium-item";
-
-            // 1. Rank & Avatar Container (Above Pill)
-            const avatarContainer = document.createElement("div");
-            avatarContainer.className = "podium-avatar-container";
-
-            const rankNum = document.createElement("div");
-            rankNum.className = "podium-rank-number";
-            rankNum.textContent = rank;
-
-            const avatarImg = document.createElement("img");
-            avatarImg.className = "podium-avatar";
-            avatarImg.src = getAvatar(entry.name);
-            avatarImg.alt = entry.name;
-
-            avatarContainer.appendChild(rankNum);
-            avatarContainer.appendChild(avatarImg);
-
-            // 2. The Pill (Name, Stats)
-            const pill = document.createElement("div");
-            pill.className =
-              "podium-pill" + (rank === 1 ? " primary" : "");
-
-            const nameEl = document.createElement("div");
-            nameEl.className = "podium-name";
-            nameEl.textContent = entry.name;
-
-            // Top3 下面显示一个高亮的百分比变化（不带 “vs yesterday” 文案）
-            const value = entry.percentChange;
-            const isDecrease = value < 0;
-
-            const changeEl = document.createElement("div");
-            changeEl.className = "trend " + (isDecrease ? "up" : "down");
-
-            const dot = document.createElement("span");
-            dot.className = "trend-dot";
-
-            const absRounded = Math.round(Math.abs(value) * 10) / 10;
-            const sign = value > 0 ? "+" : value < 0 ? "-" : "";
-            const label = (sign || "±") + absRounded + "%";
-
-            const textNode = document.createTextNode(label);
-
-            changeEl.appendChild(dot);
-            changeEl.appendChild(textNode);
-
-            const bar = document.createElement("div");
-            bar.className = "podium-bar";
-            const barFill = document.createElement("div");
-            barFill.className = "podium-bar-fill";
-            barFill.style.width = barWidth(entry.durationMinutes);
-            bar.appendChild(barFill);
-
-            pill.appendChild(nameEl);
-            pill.appendChild(changeEl);
-            pill.appendChild(bar);
-
-            item.appendChild(avatarContainer);
-            item.appendChild(pill);
+            item.innerHTML = `
+              <div class="podium-avatar-container">
+                <div class="podium-rank-number">${rank}</div>
+                <img class="podium-avatar" src="${getAvatar(entry.name)}" alt="${entry.name}">
+              </div>
+              <div class="podium-pill ${rank === 1 ? 'primary' : ''}">
+                <div class="podium-name">${entry.name}</div>
+                <div class="trend ${entry.percentChange < 0 ? 'up' : 'down'}">
+                  <span class="trend-dot"></span>
+                  ${entry.percentChange > 0 ? '+' : ''}${Math.round(entry.percentChange * 10)/10}%
+                </div>
+                <div class="podium-bar">
+                  <div class="podium-bar-fill" style="width: ${barWidth(entry.durationMinutes)}"></div>
+                </div>
+              </div>
+            `;
             podiumEl.appendChild(item);
           });
 
-          rest.forEach((entry, idx) => {
+          rest.forEach((entry) => {
             const rank = sorted.indexOf(entry) + 1;
-
             const row = document.createElement("div");
             row.className = "row";
-
-            const left = document.createElement("div");
-            left.className = "row-left";
-
-            const rankEl = document.createElement("div");
-            rankEl.className =
-              "row-rank" + (rank === 4 ? " highlight" : "");
-            rankEl.textContent = rank;
-
-            const avatarImg = document.createElement("img");
-            avatarImg.className = "row-avatar";
-            avatarImg.src = getAvatar(entry.name);
-            avatarImg.alt = entry.name;
-
-            const user = document.createElement("div");
-            user.className = "row-user";
-
-            const nameEl = document.createElement("div");
-            nameEl.className = "row-name";
-            nameEl.textContent = entry.name;
-
-            const metaEl = document.createElement("div");
-            metaEl.className = "row-meta";
-            metaEl.textContent = "Today's screen time";
-
-            user.appendChild(nameEl);
-            user.appendChild(metaEl);
-
-            left.appendChild(rankEl);
-            left.appendChild(avatarImg);
-            left.appendChild(user);
-
-            const right = document.createElement("div");
-            right.className = "row-right";
-
-            // 用“相对前一天的百分比变化”来展示加减时间（只显示百分比，不显示具体时长）
-            const value = entry.percentChange;
-            const isDecrease = value < 0;
-
-            const trendEl = document.createElement("div");
-            trendEl.className = "trend " + (isDecrease ? "up" : "down");
-            trendEl.setAttribute(
-              "aria-label",
-              isDecrease ? "screen time decreased" : "screen time increased"
-            );
-
-            const dot = document.createElement("span");
-            dot.className = "trend-dot";
-
-            const absRounded = Math.round(Math.abs(value) * 10) / 10;
-            const sign = value > 0 ? "+" : value < 0 ? "-" : "";
-            const text = document.createTextNode(
-              (sign || "±") + absRounded + "%"
-            );
-
-            trendEl.appendChild(dot);
-            trendEl.appendChild(text);
-
-            right.appendChild(trendEl);
-
-            row.appendChild(left);
-            row.appendChild(right);
+            const isDecrease = entry.percentChange < 0;
+            row.innerHTML = `
+              <div class="row-left">
+                <div class="row-rank ${rank === 4 ? 'highlight' : ''}">${rank}</div>
+                <img class="row-avatar" src="${getAvatar(entry.name)}" alt="${entry.name}">
+                <div class="row-user">
+                  <div class="row-name">${entry.name}</div>
+                  <div class="row-meta">Today's screen time</div>
+                </div>
+              </div>
+              <div class="row-right">
+                <div class="trend ${isDecrease ? 'up' : 'down'}">
+                  <span class="trend-dot"></span>
+                  ${entry.percentChange > 0 ? '+' : ''}${Math.round(entry.percentChange * 10)/10}%
+                </div>
+              </div>
+            `;
             listEl.appendChild(row);
+          });
+
+          // Initialize other views after data is ready
+          renderPersonal();
+          renderPartner();
+        }
+
+        // 2. PERSONAL (Screen Time)
+        function renderPersonal() {
+          const totalTimeEl = document.getElementById('personal-total-time');
+          const trendEl = document.getElementById('personal-trend');
+          const chartEl = document.getElementById('personal-chart');
+          
+          // Mock Data for "You"
+          const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+          // Generate some random realistic data
+          const dailyData = [320, 280, 350, 410, 290, 180, 0]; // mins, last one is today
+          
+          // Use one user from our CSV as "You" for today's value
+          const me = globalEntries.find(e => e.name === "You") || globalEntries[0]; 
+          if (me) {
+             dailyData[6] = me.durationMinutes;
+          } else {
+             dailyData[6] = 245; // Fallback if no data
+          }
+
+          const todayMins = dailyData[6];
+          totalTimeEl.textContent = formatDuration(todayMins);
+          
+          // Trend (compare to yesterday)
+          const yesterday = dailyData[5];
+          const diff = todayMins - yesterday;
+          const pct = Math.round((diff / yesterday) * 100);
+          const isUp = diff > 0;
+          trendEl.innerHTML = `
+            <span style="color: ${isUp ? '#ef4444' : '#4ade80'}">
+              ${isUp ? '▲' : '▼'} ${Math.abs(pct)}%
+            </span> from yesterday
+          `;
+
+          // Chart
+          chartEl.innerHTML = '';
+          const maxVal = Math.max(...dailyData, 400); // Scale
+          
+          dailyData.forEach((mins, idx) => {
+            const heightPct = (mins / maxVal) * 100;
+            const isToday = idx === 6;
+            
+            const col = document.createElement('div');
+            col.className = `st-bar-col ${isToday ? 'active' : ''}`;
+            col.innerHTML = `
+              <div class="st-bar-bg">
+                <div class="st-bar-fill" style="height: ${heightPct}%"></div>
+              </div>
+              <div class="st-bar-label">${weekDays[idx]}</div>
+            `;
+            chartEl.appendChild(col);
           });
         }
 
-        async function loadLeaderboard() {
-          let day0 = [];
-          let day1 = [];
+        // 3. PARTNER (1v1)
+        function renderPartner() {
+          const container = document.getElementById('partner-content');
+          if (!globalEntries.length) return;
 
+          // Pick "Me" (first user for consistency) and a random "Partner"
+          const me = globalEntries[0];
+          // Pick a random opponent that isn't me
+          let opponent = globalEntries[1];
+          if (globalEntries.length > 2) {
+             const randIdx = 1 + Math.floor(Math.random() * (globalEntries.length - 1));
+             opponent = globalEntries[randIdx];
+          }
+
+          const myTime = me.durationMinutes;
+          const oppTime = opponent.durationMinutes;
+          const iWin = myTime < oppTime; // Lower is better in screen time battle?
+          // Or maybe higher is better? The text says "Lower screen time wins"
+          
+          // Helper to create card HTML
+          function createCard(entry, isWinner, isMe) {
+             return `
+               <div class="partner-card ${isWinner ? 'winner' : ''}">
+                 <img class="partner-avatar" src="${getAvatar(entry.name)}" alt="${entry.name}">
+                 <div class="partner-name">${isMe ? 'You (' + entry.name + ')' : entry.name}</div>
+                 <div class="partner-time">${formatDuration(entry.durationMinutes)}</div>
+                 <div class="partner-status">${isWinner ? 'Winning' : 'Trailing'}</div>
+               </div>
+             `;
+          }
+
+          container.innerHTML = `
+            ${createCard(me, iWin, true)}
+            <div class="vs-badge">VS</div>
+            ${createCard(opponent, !iWin, false)}
+          `;
+        }
+
+        // --- TAB SWITCHING ---
+        const tabs = document.querySelectorAll('.pill-button');
+        const views = document.querySelectorAll('.view-section');
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            // Update Tabs
+            tabs.forEach(t => t.classList.remove('is-active'));
+            tab.classList.add('is-active');
+
+            // Update View
+            const target = tab.dataset.tab;
+            views.forEach(view => {
+              if (view.id === `view-${target}`) {
+                view.classList.add('active');
+              } else {
+                view.classList.remove('active');
+              }
+            });
+            
+            // Re-render dynamic views if needed
+            if (target === 'partner') renderPartner(); 
+          });
+        });
+
+        // --- INIT ---
+        async function loadLeaderboard() {
+          let day0 = [], day1 = [];
           try {
             const res0 = await fetch("day0.csv", { cache: "no-store" });
-            if (!res0.ok) throw new Error("day0 load error");
-            const text0 = await res0.text();
-            const parsed0 = parseDayCsv(text0);
-            day0 = parsed0 && parsed0.length ? parsed0 : fallbackDay0;
-          } catch (e) {
-            day0 = fallbackDay0;
-          }
+            if (res0.ok) day0 = parseDayCsv(await res0.text());
+            else day0 = fallbackDay0;
+          } catch (e) { day0 = fallbackDay0; }
 
           try {
             const res1 = await fetch("day1.csv", { cache: "no-store" });
-            if (!res1.ok) throw new Error("day1 load error");
-            const text1 = await res1.text();
-            const parsed1 = parseDayCsv(text1);
-            day1 = parsed1 && parsed1.length ? parsed1 : fallbackDay1;
-          } catch (e) {
-            day1 = fallbackDay1;
-          }
+            if (res1.ok) day1 = parseDayCsv(await res1.text());
+            else day1 = fallbackDay1;
+          } catch (e) { day1 = fallbackDay1; }
 
           buildLeaderboard(day0, day1);
         }
