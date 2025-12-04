@@ -599,6 +599,33 @@
       .app-time { font-size: 13px; font-weight: 600; color: #e5e7eb; }
 
       /* --- Partner View Styles --- */
+      .partner-selector-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 4px;
+      }
+      .partner-select-label {
+        font-size: 13px;
+        color: #9ca3af;
+        font-weight: 600;
+      }
+      .partner-select {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.8);
+        color: #e5e7eb;
+        font-size: 13px;
+        outline: none;
+        appearance: none; /* Remove default arrow on some browsers */
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 10px;
+      }
+
       .partner-container {
         display: flex;
         gap: 12px;
@@ -815,12 +842,21 @@
 
           <!-- PARTNER VIEW -->
           <div id="view-partner" class="view-section">
-            <header class="podium-header">
-               <div class="podium-title">
+          <header class="podium-header">
+            <div class="podium-title">
                  <span>1v1 Battle</span>
                  <span>Today</span>
                </div>
             </header>
+            
+            <!-- Opponent Selector -->
+            <div class="partner-selector-container">
+              <label for="partner-select" class="partner-select-label">Choose Opponent:</label>
+              <select id="partner-select" class="partner-select">
+                <!-- Options injected by JS -->
+              </select>
+            </div>
+
             <div class="partner-container" id="partner-content">
                <!-- Injected by JS -->
             </div>
@@ -834,12 +870,12 @@
             <header class="podium-header">
               <div class="podium-title">
                 <span>Top 3 · Screen time recovered 28 Dec</span>
-                <span>Updated every night at 00:00</span>
-              </div>
-            </header>
+              <span>Updated every night at 00:00</span>
+            </div>
+          </header>
 
-            <div class="podium" id="podium"></div>
-            <div class="list" id="leaderboard-list" aria-label="Full ranking list"></div>
+          <div class="podium" id="podium"></div>
+          <div class="list" id="leaderboard-list" aria-label="Full ranking list"></div>
           </div>
 
         </section>
@@ -914,20 +950,20 @@
         }
 
         // --- AVATAR HELPERS ---
-        const avatarMap = {
+          const avatarMap = {
           "Andita": "Andita.png", "Andrash": "Andrash.png", "Anyssa": "Anyssa.jpg",
           "Ayu": "Ayu.jpg", "Febby": "Febby.jpg", "Ghifary": "Ghifary.jpg",
           "Glory": "Glory.png", "Hannah": "Hannah.jpg", "Maya": "Maya.jpg",
           "Naomi": "Naomi.jpg", "Nicho": "Nicho.jpg", "Pradhira": "Pradhira.png",
           "Shastya": "Shastya.jpg", "William": "William.png"
-        };
+          };
 
-        function getAvatar(name) {
-          if (avatarMap[name]) return "img/" + avatarMap[name];
-          const first = name.split(' ')[0];
-          if (avatarMap[first]) return "img/" + avatarMap[first];
-          return "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
-        }
+          function getAvatar(name) {
+            if (avatarMap[name]) return "img/" + avatarMap[name];
+            const first = name.split(' ')[0];
+            if (avatarMap[first]) return "img/" + avatarMap[first];
+            return "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=random";
+          }
 
         // --- RENDER FUNCTIONS ---
 
@@ -963,8 +999,8 @@
           const maxD = Math.max(...durationsTop);
           const minD = Math.min(...durationsTop);
           function barWidth(minutes) {
-             if (maxD === minD) return "100%";
-             const score = (maxD - minutes) / (maxD - minD);
+            if (maxD === minD) return "100%";
+            const score = (maxD - minutes) / (maxD - minD);
              return Math.round((0.3 + score * 0.7) * 100) + "%";
           }
 
@@ -1080,21 +1116,67 @@
         // 3. PARTNER (1v1)
         function renderPartner() {
           const container = document.getElementById('partner-content');
+          const selectEl = document.getElementById('partner-select');
           if (!globalEntries.length) return;
 
-          // Pick "Me" (first user for consistency) and a random "Partner"
+          // 1. Pick "Me" (assume first entry is current user for demo)
           const me = globalEntries[0];
-          // Pick a random opponent that isn't me
-          let opponent = globalEntries[1];
-          if (globalEntries.length > 2) {
-             const randIdx = 1 + Math.floor(Math.random() * (globalEntries.length - 1));
-             opponent = globalEntries[randIdx];
+
+          // 2. Define "Consented" Opponents (subset of globalEntries)
+          // In a real app, this would come from a "friends who consented" API
+          // For demo, let's pick 3 specific names + "Random"
+          const consentedNames = ["Maya", "Liam", "Sophia", "Nicho", "Glory"]; 
+          // Filter globalEntries to find these people (if they exist in CSV)
+          // Also add a "Random" option
+          
+          // Populate select only once (or if empty)
+          if (selectEl.options.length === 0) {
+            // Add "Random" option first
+            const randomOpt = document.createElement('option');
+            randomOpt.value = 'random';
+            randomOpt.textContent = '🎲 Random Opponent';
+            selectEl.appendChild(randomOpt);
+
+            consentedNames.forEach(name => {
+              // Check if this person exists in our data
+              const person = globalEntries.find(e => e.name.includes(name));
+              if (person && person.name !== me.name) {
+                const opt = document.createElement('option');
+                opt.value = person.name;
+                opt.textContent = person.name;
+                selectEl.appendChild(opt);
+              }
+            });
+            
+            // Add change listener
+            selectEl.addEventListener('change', () => renderPartner());
+          }
+
+          // 3. Determine Opponent based on Selection
+          let opponent;
+          const selectedValue = selectEl.value;
+
+          if (selectedValue === 'random') {
+             // Pick random from consented list or global list (excluding me)
+             // Let's stick to global list for "random" to keep it fun
+             let candidates = globalEntries.filter(e => e.name !== me.name);
+             if (candidates.length > 0) {
+                const randIdx = Math.floor(Math.random() * candidates.length);
+                opponent = candidates[randIdx];
+             }
+          } else {
+             // Find specific person
+             opponent = globalEntries.find(e => e.name === selectedValue);
+          }
+
+          // Fallback if opponent not found
+          if (!opponent) {
+             opponent = globalEntries[1] || me; 
           }
 
           const myTime = me.durationMinutes;
           const oppTime = opponent.durationMinutes;
-          const iWin = myTime < oppTime; // Lower is better in screen time battle?
-          // Or maybe higher is better? The text says "Lower screen time wins"
+          const iWin = myTime < oppTime; 
           
           // Helper to create card HTML
           function createCard(entry, isWinner, isMe) {
